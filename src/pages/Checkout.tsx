@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +21,10 @@ const Checkout = () => {
     cvv: '',
     nameOnCard: ''
   });
+
+  const [promoCode, setPromoCode] = useState('');
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const { toast } = useToast();
 
   const cartItems = [
     {
@@ -40,13 +45,16 @@ const Checkout = () => {
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shipping = 9.99;
-  const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
+  const tax = (subtotal - promoDiscount) * 0.08;
+  const total = subtotal + shipping + tax - promoDiscount;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Order submitted:', formData);
-    // Handle order submission
+    toast({
+      title: "Order placed successfully!",
+      description: "You will receive a confirmation email shortly."
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,6 +62,29 @@ const Checkout = () => {
       ...prev,
       [e.target.name]: e.target.value
     }));
+  };
+
+  const handleApplyPromo = () => {
+    const validCodes = {
+      'SAVE10': 10,
+      'WELCOME20': 20,
+      'FIRST15': 15
+    };
+    
+    const discount = validCodes[promoCode.toUpperCase() as keyof typeof validCodes];
+    if (discount) {
+      setPromoDiscount(discount);
+      toast({
+        title: "Promo code applied!",
+        description: `You saved $${discount} with code ${promoCode.toUpperCase()}`
+      });
+    } else {
+      toast({
+        title: "Invalid promo code",
+        description: "Please check your code and try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -254,11 +285,37 @@ const Checkout = () => {
               ))}
             </div>
 
+            {/* Promo Code Section */}
+            <div className="mb-6 p-4 bg-muted/30 rounded-lg">
+              <h4 className="font-medium mb-3">Promo Code</h4>
+              <div className="flex space-x-2">
+                <Input
+                  placeholder="Enter promo code"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value)}
+                />
+                <Button variant="outline" onClick={handleApplyPromo}>
+                  Apply
+                </Button>
+              </div>
+              {promoDiscount > 0 && (
+                <p className="text-green-600 text-sm mt-2">
+                  Promo code applied: -${promoDiscount}
+                </p>
+              )}
+            </div>
+
             <div className="space-y-3 mb-6 border-t pt-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
+              {promoDiscount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Promo Discount</span>
+                  <span>-${promoDiscount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span>Shipping</span>
                 <span>${shipping.toFixed(2)}</span>

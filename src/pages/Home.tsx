@@ -98,7 +98,7 @@ const Home = () => {
             {categories.map((category, index) => (
               <Link
                 key={index}
-                to={`/category/${category.name.toLowerCase()}`}
+                to={`/products?category=${category.name.toLowerCase()}`}
                 className="group"
               >
                 <div className="relative overflow-hidden rounded-lg">
@@ -137,20 +137,32 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Newsletter Section */}
+      {/* Features Section */}
       <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
-          <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-            Subscribe to our newsletter and be the first to know about new products and exclusive offers
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <Button>Subscribe</Button>
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Why Choose ShopEasy?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🚚</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Free Shipping</h3>
+              <p className="text-muted-foreground">Free shipping on orders over $50</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🔒</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Secure Payment</h3>
+              <p className="text-muted-foreground">Your payment information is always safe</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">📞</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">24/7 Support</h3>
+              <p className="text-muted-foreground">Get help whenever you need it</p>
+            </div>
           </div>
         </div>
       </section>

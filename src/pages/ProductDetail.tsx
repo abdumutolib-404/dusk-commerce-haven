@@ -1,13 +1,17 @@
 
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Heart, Share2, Minus, Plus } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   // Mock product data - in real app, fetch based on id
   const product = {
@@ -34,6 +38,39 @@ const ProductDetail = () => {
   };
 
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+
+  const handleAddToCart = () => {
+    toast({
+      title: "Added to cart",
+      description: `${quantity} ${product.name} added to your cart.`
+    });
+  };
+
+  const handleToggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+    toast({
+      title: isFavorite ? "Removed from favorites" : "Added to favorites",
+      description: isFavorite 
+        ? "Product removed from your favorites."
+        : "Product added to your favorites."
+    });
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        text: product.description,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link copied",
+        description: "Product link copied to clipboard."
+      });
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 animate-fade-in">
@@ -138,14 +175,19 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex space-x-4">
-              <Button size="lg" className="flex-1">
+              <Button size="lg" className="flex-1" onClick={handleAddToCart}>
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 Add to Cart
               </Button>
-              <Button variant="outline" size="lg">
-                <Heart className="h-5 w-5" />
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={handleToggleFavorite}
+                className={isFavorite ? 'text-red-500 border-red-500' : ''}
+              >
+                <Heart className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} />
               </Button>
-              <Button variant="outline" size="lg">
+              <Button variant="outline" size="lg" onClick={handleShare}>
                 <Share2 className="h-5 w-5" />
               </Button>
             </div>
